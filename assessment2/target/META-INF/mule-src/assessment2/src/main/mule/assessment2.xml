@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d4a62cdb-2547-4713-ae46-e19b5d7938fb" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="2592aa14-61a3-4659-a333-2101573d2793" >
+		<http:request-connection host="api.meteostat.com" />
+	</http:request-config>
+	<flow name="assessment2Flow" doc:id="add3a18b-04b8-4eca-ad3a-f450b131a4fe" >
+		<http:listener doc:name="Listener" doc:id="f02c6d94-a7e3-432f-93c3-4d9f9c7e37d5" config-ref="HTTP_Listener_config" path="/meteo"/>
+		<http:request method="GET" doc:name="Request" doc:id="0f7f1af1-3119-43f6-956c-e7bcd7d45d92" config-ref="HTTP_Request_configuration" url="https://api.meteostat.net/v1/history/daily?station=10637&amp;start=2017-01-01&amp;end=2017-12-31&amp;key=lR0cZrnk">
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="4961bfd4-189f-4bbb-918b-1de0d7dacaf1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+	
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="01cb5a67-8cf8-4a7e-84eb-c5365bb1f7b5" message="#[payload]"/>
+	</flow>
+</mule>
