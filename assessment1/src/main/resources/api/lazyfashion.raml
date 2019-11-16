@@ -1,0 +1,49 @@
+#%RAML 1.0
+title: lazyfashion
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/4f587fe3-244a-4a44-b5d5-4c55ba0a6c8c/ # baseUri: 
+
+/customer:
+  /add:
+    post:
+      queryParameters:
+        cid:
+          required: true
+        cname:
+          required: true
+        caddress:
+          required: true
+        cnumber:
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "message": "success"
+                }
+  /all:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "message": "all records"
+                }
+  /update:
+    put:
+      queryParameters:
+        cid:
+          required: true
+        cname:
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "message": "information updated"
+                }
