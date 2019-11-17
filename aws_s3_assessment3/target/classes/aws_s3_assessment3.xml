@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a8d9cc32-d7b9-41fd-9639-be42038b3cca" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="a7d526ec-06e7-4f6b-a53e-04d7f8180fa1" >
+		<s3:basic-connection accessKey="AKIAJWKZDPLHRO4WPP7A" secretKey=" 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" />
+	</s3:config>
+	<flow name="aws_s3_assessment3Flow" doc:id="2ce7829b-963b-4d35-b9ce-24d54b0e3f73" >
+		<http:listener doc:name="Listener" doc:id="f1c414d1-7922-4e2a-9c9e-982e780ed414" config-ref="HTTP_Listener_config" path="/aws"/>
+		<logger level="INFO" doc:name="Logger" doc:id="37fdae83-cb67-4419-b874-cbebac009381" message="#[payload]"/>
+		<s3:create-object doc:name="Create object" doc:id="02ab527d-2ca9-4ebb-abe1-1a8d777868a6" config-ref="Amazon_S3_Configuration" bucketName="myfirstbucketfathima" key=" 'fathimafile' ++ ( now() as String {format:'yyyy-MM-dd-hh-mm-ss'} ) ++ '.txt'"/>
+		<set-payload value='#["MUle bucket created on s3"]' doc:name="Set Payload" doc:id="fe7ad341-1b7b-4691-943d-e6e5dfe3cf83" />
+	</flow>
+</mule>
