@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7a7dc967-8b4d-401f-b265-5af925c5bbfd" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="9b0512e4-8ad0-479c-834c-b16187b8cb70" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="3989e85e-4f96-4e71-87fa-e2785f5cbc7b" >
+		<http:request-connection host="localhost" port="8082" />
+	</http:request-config>
+	<flow name="abcdcompanyapp1Flow" doc:id="772051cc-2bd1-404d-96be-c93cf5bb70e8" >
+		<http:listener doc:name="Listener" doc:id="22b110bc-a366-4b0c-a6e6-5b2dd7cf5a65" config-ref="HTTP_Listener_config" path="/read"/>
+		<file:read doc:name="Read" doc:id="a9aff8a9-2bd7-456f-8113-d1c0b73b1f41" path="E:\SalesJan2009.csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="ec4b9a70-721a-42e3-a137-f8b3d5e1f1da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="edb56bac-1ac0-48e2-8cbc-893f89d3d0a7" message="#[payload]"/>
+		<jms:publish doc:name="Publish" doc:id="9b7bc6cd-352b-495c-9621-915bed4431df" config-ref="JMS_Config" destination="ABCDcompany"/>
+		<http:request method="GET" doc:name="Request" doc:id="21e55d94-2274-4073-8ced-ae6c02f1740b" config-ref="HTTP_Request_configuration" path="/read2"/>
+	</flow>
+</mule>
